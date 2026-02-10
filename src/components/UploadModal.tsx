@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SAMPLE_TRANSCRIPT } from '../data/sampleTranscript';
+import { logEvent } from '../utils/tracking';
 
 interface UploadModalProps {
   onClose: () => void;
@@ -12,32 +13,33 @@ export default function UploadModal({ onClose }: UploadModalProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
 
-  // Preload the transcript when text mode is selected
   useEffect(() => {
     if (uploadType === 'text') {
       setInput(SAMPLE_TRANSCRIPT.trim());
     } else {
       setInput('');
     }
+    logEvent('Upload Type Selected', { type: uploadType });
   }, [uploadType]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
+    logEvent('Upload Started', { type: uploadType });
     
-    // Simulate processing with multiple stages
     setTimeout(() => {
-      // Stage 1: Transcribing
+      logEvent('Processing Stage', { stage: 'Transcribing' });
     }, 1000);
     
     setTimeout(() => {
-      // Stage 2: Analyzing
+      logEvent('Processing Stage', { stage: 'Analyzing' });
     }, 2000);
     
     setTimeout(() => {
-      // Stage 3: Mapping themes
+      logEvent('Processing Stage', { stage: 'Mapping Themes' });
       setIsProcessing(false);
       navigate('/analysis');
+      logEvent('Upload Completed', { type: uploadType });
     }, 3500);
   };
 
