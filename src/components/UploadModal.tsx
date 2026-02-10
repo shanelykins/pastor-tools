@@ -6,6 +6,11 @@ interface UploadModalProps {
   onClose: () => void;
 }
 
+// Simple event logging function
+const logEvent = (eventName: string, details: object = {}) => {
+  console.log(`Event: ${eventName}`, details);
+};
+
 export default function UploadModal({ onClose }: UploadModalProps) {
   const [uploadType, setUploadType] = useState<'youtube' | 'audio' | 'text'>('text');
   const [input, setInput] = useState('');
@@ -19,23 +24,25 @@ export default function UploadModal({ onClose }: UploadModalProps) {
     } else {
       setInput('');
     }
+    logEvent('Upload Type Selected', { uploadType });
   }, [uploadType]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
+    logEvent('Form Submitted', { uploadType, inputLength: input.length });
     
     // Simulate processing with multiple stages
     setTimeout(() => {
-      // Stage 1: Transcribing
+      logEvent('Processing Stage Started', { stage: 'Transcribing' });
     }, 1000);
     
     setTimeout(() => {
-      // Stage 2: Analyzing
+      logEvent('Processing Stage Started', { stage: 'Analyzing' });
     }, 2000);
     
     setTimeout(() => {
-      // Stage 3: Mapping themes
+      logEvent('Processing Stage Started', { stage: 'Mapping themes' });
       setIsProcessing(false);
       navigate('/analysis');
     }, 3500);
@@ -45,7 +52,7 @@ export default function UploadModal({ onClose }: UploadModalProps) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full p-8 relative">
         <button
-          onClick={onClose}
+          onClick={() => { onClose(); logEvent('Upload Cancelled'); }}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
         >
           ×
@@ -166,7 +173,7 @@ export default function UploadModal({ onClose }: UploadModalProps) {
               </button>
               <button
                 type="button"
-                onClick={onClose}
+                onClick={() => { onClose(); logEvent('Upload Cancelled'); }}
                 className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
               >
                 Cancel
